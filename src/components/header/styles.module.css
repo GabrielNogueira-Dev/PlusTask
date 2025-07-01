@@ -1,0 +1,109 @@
+
+.header {
+    width:100%;
+    height: 76px;
+    background-color: #0f0f0f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.content {
+    padding: 0 18px;
+    width: 100%;
+    max-width: 1024px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.content a {
+    text-decoration: none;
+}
+
+.logo {
+    color: #fff;
+    font-size: 32px;
+}
+
+.logo span {
+color: #ea3140;
+padding-left: 2px;
+}
+
+.loginButton {
+  position: relative;
+  background: transparent;
+  padding: 8px 32px;
+  border-radius: 24px;
+  color: #fff;
+  border: 1.5px solid #fff;
+  cursor: pointer;
+  z-index: 1;
+  overflow: hidden; /* garante que a animação não vaze */
+transition: transform 0.4s;
+}
+
+.loginButton:hover {
+    transform: scale(1.06);
+   background: none;
+}
+
+.loginButton::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border-radius: 24px;
+  background: conic-gradient(
+    from 0deg,       /* Inicia o gradiente a partir de 0 graus */
+    #ff0000,         /* Vermelho */
+    #ff9900,         /* Laranja */
+    #33cc33,         /* Verde */
+    #3399ff,         /* Azul */
+    #9900cc,         /* Roxo */
+    #ff0000          /* Fecha o gradiente voltando ao vermelho */
+  );
+  z-index: -1;
+  opacity: 0;
+  transform: rotate(0deg);
+  transition: opacity 0.3s ease;
+  animation: rotate-border 2.2s linear infinite;
+}
+
+.loginButton:hover::before {
+  opacity: 1;
+}
+
+@keyframes rotate-border {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+}
+
+.link {
+  background-color: #0f0f0f;
+  color: #fff;
+  padding: 8px 32px;          /* Igual ao padding horizontal do loginButton */
+  border: 1.5px solid #fff;   /* Mesma espessura da borda do loginButton */
+  border-radius: 24px;        /* Igual borda arredondada */
+  margin: 0 14px;
+  font-size: 16px;            /* Tamanho próximo do loginButton (ajustável) */
+  cursor: pointer;            
+  text-decoration: none;      
+  display: inline-flex;       /* Para alinhar verticalmente se precisar */
+  align-items: center;
+  justify-content: center;
+  font-size: small;
+}
+
