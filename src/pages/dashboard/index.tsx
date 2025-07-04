@@ -16,7 +16,7 @@ import Link from 'next/link'
 
 interface HomeProps {
     user: {
-        email:string;//precisei criar pois no dashboard precisa de user que é o session?.user.email que tem la embaixo na
+        email:string;//precisei criar pois no dashboard precisa de user que é o session?.user.email que tem la embaixo ssr
     }
 }
 
