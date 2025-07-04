@@ -5,9 +5,10 @@ import Head from "next/head";
 import styles from './styles.module.css'
 
 import { db } from "@/services/firebaseConection";
-import { doc,query,collection,where, getDoc, addDoc } from "firebase/firestore";
+import { doc,query,collection,where, getDoc, addDoc, getDocs } from "firebase/firestore";
 
 import { Textarea } from "@/components/header/textarea";
+import { FaTrash } from "react-icons/fa";
 
 interface TaskProps {
     item :{
@@ -16,13 +17,24 @@ interface TaskProps {
     created: string;
     user:string;
     taskid:string;
-    }}
+    };
+allComents: ComentProps[]
+}
 
-export default function Task({ item }:TaskProps){
+    interface ComentProps {
+        id:string;
+        coment:string;
+        taskId:string;
+        name:string;
+        user:string;
+    }
+
+export default function Task({ item, allComents }:TaskProps){
 
 const {data: session} = useSession();
 
 const [input,setInput] = useState("");
+const [comments,setComments] = useState<ComentProps[]>(allComents || [])
 
 async function handleComent(e:FormEvent){
     e.preventDefault()
@@ -32,13 +44,22 @@ if(input === "") return;
 if(!session?.user?.email || !session?.user?.name) return;
  
 try{
-const docRef = addDoc(collection(db,"coments"),{
+const docRef = await addDoc(collection(db,"coments"),{
     coment:input,
     created: new Date(),
     user: session?.user.email,
     name: session?.user.name,
     taskId:item?.taskid
 })
+
+const data = {
+    id: docRef.id,
+    coment: input,
+    user: session?.user?.email,
+    name: session?.user?.name,
+    taskId: item?.taskid
+}
+setComments((olditems)=> [...olditems, data])
 setInput("")
 }catch(err){
 console.log(err)
@@ -76,6 +97,29 @@ console.log(err)
             </form>
         </section>
 
+<section className={styles.comentsContainer}>
+    <h2>Todos os seus comentários</h2>
+    {comments.length === 0 && (
+        <span>Nenhum comentário encontrado</span>
+    )}
+
+    {comments.map((item)=>(
+        <article key={item.id} className={styles.comment}>
+           <div className={styles.headComment}>
+            <label className={styles.commentsLabel}>{item.name}</label>
+            {item.user === session?.user?.email && (
+                <button className={styles.buttonTrash}>
+                <FaTrash size={18} color="#ea3140"
+                />
+            </button>
+            )}
+           </div>
+            <p>{item.coment}</p>
+        </article>
+    ))}
+
+</section>
+
         </div>
     )
 }
@@ -84,6 +128,20 @@ export const getServerSideProps: GetServerSideProps = async ({ params })=> {
     const id = params?.id as string;
 
     const docRef = doc(db,"tarefas",id)
+
+        const q = query(collection(db,"coments"), where("taskId", "==", id))
+        const snapshotComents = await getDocs(q)
+
+        let allComents:ComentProps[] = []
+        snapshotComents.forEach((doc)=>{
+            allComents.push({
+                id: doc.id,
+                coment: doc.data().coment,
+                user: doc.data().user,
+                name: doc.data().name,
+                taskId: doc.data().taskId
+            })
+        })
 
     const snapshot = await getDoc(docRef)
 
@@ -119,7 +177,8 @@ const task = {
 
     return {
     props: {
-        item: task
+        item: task, 
+        allComents: allComents,
     }
 }
 }
