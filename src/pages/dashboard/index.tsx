@@ -4,7 +4,7 @@ import Head from 'next/head'
 
 import { getSession } from 'next-auth/react'
 import { Textarea } from '@/components/header/textarea'
-import { FaShare } from "react-icons/fa";
+import { FaCopy, FaShare } from "react-icons/fa";
 import { FaTrash } from 'react-icons/fa'
 import { useState, ChangeEvent, FormEvent, useEffect } from 'react'
 
@@ -143,7 +143,7 @@ alert("cop")
                             <div className={styles.tagContainer}>
                             <label className= {styles.tag}>PÚBLICO</label>
                             <button className= {styles.shareButton} onClick={()=> handleShare(item.id)}>
-                                <FaShare
+                                <FaCopy
                                 size={20} color='#3183ff' 
                                 />
                                 </button>

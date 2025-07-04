@@ -5,7 +5,8 @@ import Head from "next/head";
 import styles from './styles.module.css'
 
 import { db } from "@/services/firebaseConection";
-import { doc,query,collection,where, getDoc, addDoc, getDocs } from "firebase/firestore";
+import { doc,query,collection,where,
+     getDoc, addDoc, getDocs, deleteDoc } from "firebase/firestore";
 
 import { Textarea } from "@/components/header/textarea";
 import { FaTrash } from "react-icons/fa";
@@ -67,6 +68,21 @@ console.log(err)
 
 }
 
+async function handleDeleteComent(id:string){
+try{
+const docRef = doc(db,"coments",id)
+await deleteDoc(docRef);
+
+const deleteComent = comments.filter((itm)=> itm.id !== id)
+
+setComments(deleteComent)
+}catch(err){
+    console.log(err);
+}
+
+
+}
+
     return(
         <div className={styles.container}>
             <Head>
@@ -106,9 +122,11 @@ console.log(err)
     {comments.map((item)=>(
         <article key={item.id} className={styles.comment}>
            <div className={styles.headComment}>
+           
             <label className={styles.commentsLabel}>{item.name}</label>
             {item.user === session?.user?.email && (
-                <button className={styles.buttonTrash}>
+                <button onClick={()=> handleDeleteComent(item.id)}
+                 className={styles.buttonTrash}>
                 <FaTrash size={18} color="#ea3140"
                 />
             </button>
