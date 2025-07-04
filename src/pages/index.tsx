@@ -40,7 +40,7 @@ export default function Home({posts,coments}:HomeProps) {
       <span>+ {posts} posts</span>
     </section>
     <section className={styles.box}>
-      <span>+ {coments} coments</span>
+      <span>+ {coments} comentários</span>
     </section>
 </div>
 
