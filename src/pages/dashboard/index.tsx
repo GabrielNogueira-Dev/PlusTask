@@ -2,9 +2,11 @@ import { GetServerSideProps } from 'next'
 import styles from './styles.module.css'
 import Head from 'next/head'
 
+import { toast } from "sonner";
+
 import { getSession } from 'next-auth/react'
 import { Textarea } from '@/components/header/textarea'
-import { FaCopy, FaShare } from "react-icons/fa";
+import { FaShare } from "react-icons/fa";
 import { FaTrash } from 'react-icons/fa'
 import { useState, ChangeEvent, FormEvent, useEffect } from 'react'
 
@@ -89,12 +91,34 @@ e.preventDefault()
 
     }
 
-  async  function handleShare(id:string){
-      await navigator.clipboard.writeText(//funcionalidade de copiar 
-        ` ${process.env.NEXT_PUBLIC_URL}/task/${id}`
-      )
-alert("cop")
+    async function handleShare(id: string) {
+  const url = `${process.env.NEXT_PUBLIC_URL}/task/${id}`;
+  const whatsappAppUrl = `whatsapp://send?text=${encodeURIComponent("Confira esta tarefa no PlusTask: " + url)}`;
+
+  try {
+    // isso me faz Copiar link sempre
+    await navigator.clipboard.writeText(url);
+
+    if (navigator.share) {
+      // Tenta compartilhar pelo sistema (mobile/browsers compatíveis)
+      await navigator.share({
+        title: "Compartilhar tarefa",
+        text: "Confira esta tarefa no PlusTask:",
+        url,
+      });
+      toast.success("Link copiado!");
+    } 
+    else{
+        window.open(whatsappAppUrl, "_blank");
+        toast.success("Seu Link foi copiado! Abra o Whatsapp para compartilhar.");
     }
+   
+  } catch (err) {
+    toast.error("Erro ao compartilhar! Apenas Abra o arquivo normamente e cole o link");
+    console.error(err);
+  }
+
+}
 
     async function handleDeleteTask(id:string){
         const docRef = doc(db,"tarefas",id)
@@ -124,7 +148,7 @@ alert("cop")
                               checked = {publicTask}
                               onChange= {handleChangePublic}
                          />
-                         <label>Deixar tarefa pública</label>
+                         <label>Deixar público</label>
                     </div>
 
                         <button className={styles.button} type="submit"
@@ -143,7 +167,7 @@ alert("cop")
                             <div className={styles.tagContainer}>
                             <label className= {styles.tag}>PÚBLICO</label>
                             <button className= {styles.shareButton} onClick={()=> handleShare(item.id)}>
-                                <FaCopy
+                                <FaShare
                                 size={20} color='#3183ff' 
                                 />
                                 </button>
